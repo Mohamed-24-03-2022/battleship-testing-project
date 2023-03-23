@@ -3,7 +3,6 @@ import {
   Player,
   createShip,
   receiveAttack,
-  fillBoard,
   addShipToBoard,
 } from './app';
 let player1 = Player('Player1', 0);
