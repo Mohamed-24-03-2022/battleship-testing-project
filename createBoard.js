@@ -1,3 +1,0 @@
-
-
-// export { board, getCell, setCell };

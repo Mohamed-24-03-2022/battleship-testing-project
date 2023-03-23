@@ -1,4 +1,12 @@
-import { createShip, createGameBoard, receiveAttack } from './app';
+import {
+  createGameBoard,
+  Player,
+  createShip,
+  receiveAttack,
+  fillBoard,
+  addShipToBoard,
+} from './app';
+let player1 = Player('Player1', 0);
 
 test('createShip factory', () => {
   expect(createShip(5, 0)).toMatchObject({
@@ -8,43 +16,69 @@ test('createShip factory', () => {
   });
 });
 
-test('create and fill game board', () => {
-  expect(createGameBoard(0, 0, 5).board).toEqual([
-    ['ship cell', null, null, null, null, null, null, null, null, null],
-    ['ship cell', null, null, null, null, null, null, null, null, null],
-    ['ship cell', null, null, null, null, null, null, null, null, null],
-    ['ship cell', null, null, null, null, null, null, null, null, null],
-    ['ship cell', null, null, null, null, null, null, null, null, null],
+test('create a game board', () => {
+  expect(createGameBoard().board).toEqual([
+    [null, null, null, null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null, null, null, null],
     [null, null, null, null, null, null, null, null, null, null],
     [null, null, null, null, null, null, null, null, null, null],
     [null, null, null, null, null, null, null, null, null, null],
     [null, null, null, null, null, null, null, null, null, null],
     [null, null, null, null, null, null, null, null, null, null],
   ]);
-  expect(createGameBoard(1, 1, 5).board).toEqual([
+});
+
+test('adding ships to the board', () => {
+  addShipToBoard(player1, 0, 0, 5)
+  expect(player1.board).toEqual([
     ['ship cell', null, null, null, null, null, null, null, null, null],
-    ['ship cell', 'ship cell', null, null, null, null, null, null, null, null],
-    ['ship cell', 'ship cell', null, null, null, null, null, null, null, null],
-    ['ship cell', 'ship cell', null, null, null, null, null, null, null, null],
-    ['ship cell', 'ship cell', null, null, null, null, null, null, null, null],
-    [null, 'ship cell', null, null, null, null, null, null, null, null],
+    ['ship cell', null, null, null, null, null, null, null, null, null],
+    ['ship cell', null, null, null, null, null, null, null, null, null],
+    ['ship cell', null, null, null, null, null, null, null, null, null],
+    ['ship cell', null, null, null, null, null, null, null, null, null],
     [null, null, null, null, null, null, null, null, null, null],
     [null, null, null, null, null, null, null, null, null, null],
     [null, null, null, null, null, null, null, null, null, null],
     [null, null, null, null, null, null, null, null, null, null],
-  ]);
-  expect(createGameBoard(1, 0, 5).isFilled).toBe(true);
+    [null, null, null, null, null, null, null, null, null, null],
+  ])
 });
 
 test('test attack function ', () => {
-  createGameBoard(1, 1, 5);
-  expect(receiveAttack(1, 1)).toEqual({ msg: 'hit', shipMsg: 'ship got a hit' });
-  expect(receiveAttack(3, 3)).toEqual({ msg: 'attacked empty cell', shipMsg: undefined });
-  expect(receiveAttack(2, 1)).toEqual({ msg: 'hit', shipMsg: 'ship got a hit' });
-  expect(receiveAttack(3, 1)).toEqual({ msg: 'hit', shipMsg: 'ship got a hit' });
-  expect(receiveAttack(4, 1)).toEqual({ msg: 'hit', shipMsg: 'ship got a hit' });
-  expect(receiveAttack(5, 1)).toEqual({ msg: 'hit', shipMsg: 'ship got a hit' });
-  expect(receiveAttack(5, 1)).toEqual({ msg: "already attacked", shipMsg: undefined });
-  expect(receiveAttack(6, 1)).toEqual({ msg: 'attacked empty cell', shipMsg: undefined });
+  addShipToBoard(player1, 1, 1, 5);
+  expect(receiveAttack(player1, 1, 1)).toEqual({
+    msg: 'hit',
+    shipMsg: 'ship got a hit',
+  });
+  expect(receiveAttack(player1, 3, 3)).toEqual({
+    msg: 'attacked empty cell',
+    shipMsg: 'not attacked',
+  });
+  expect(receiveAttack(player1, 2, 1)).toEqual({
+    msg: 'hit',
+    shipMsg: 'ship got a hit',
+  });
+  expect(receiveAttack(player1, 3, 1)).toEqual({
+    msg: 'hit',
+    shipMsg: 'ship got a hit',
+  });
+  expect(receiveAttack(player1, 4, 1)).toEqual({
+    msg: 'hit',
+    shipMsg: 'ship got a hit',
+  });
+  expect(receiveAttack(player1, 5, 1)).toEqual({
+    msg: 'hit',
+    shipMsg: 'ship got a hit',
+  });
+  expect(receiveAttack(player1, 5, 1)).toEqual({
+    msg: 'already attacked',
+    shipMsg: 'not attacked',
+  });
+  expect(receiveAttack(player1, 6, 1)).toEqual({
+    msg: 'attacked empty cell',
+    shipMsg: 'not attacked',
+  });
 });
-//

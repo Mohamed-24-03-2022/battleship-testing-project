@@ -1,4 +1,3 @@
-// import { board, getCell, setCell } from './createBoard';
 
 const createGameBoard = () => {
   const board = [];
@@ -31,25 +30,6 @@ const Player = (name, score = 0, isAttacked = false) => {
     ...gameBoard,
     ships,
     isAttacked,
-  };
-
-  player.attack = function (x, y) {
-    const info = receiveAttack(x, y);
-    if (info.msg === 'hit') {
-      this.score += 1;
-    }
-  };
-
-  player.computerAttack = function () {
-    const randomX = Math.floor(Math.random() * 10);
-    const randomY = Math.floor(Math.random() * 10);
-    const info = receiveAttack(randomX, randomY);
-    if (info.msg === 'hit') {
-      this.score += 1;
-    }
-    if (info.msg === 'already attacked') {
-      this.computerAttack();
-    }
   };
 
   return player;
@@ -326,30 +306,35 @@ computerBoard.addEventListener('click', handleComputerEvent);
 
 // restarting part
 const restartDom = () => {
+  gameOverBoard.classList.add('hidden');
   [...playerBoard.children].forEach((cell) => {
     cell.style.backgroundColor = 'inherit';
   });
   [...computerBoard.children].forEach((cell) => {
     cell.style.backgroundColor = 'inherit';
   });
+  initializeGame()
 };
-restartBtn.addEventListener('click', () => {
-  gameOverBoard.classList.add('hidden');
-  restartDom();
+restartBtn.addEventListener('click', restartDom);
+
+// initializing the game
+let randNumArr = [];
+let player1 = Player('Player1', 0);
+let computer = Player('Computer', 0);
+const initializeGame = () => {
   randNumArr.length = 0;
   player1 = Player('Player1', 0);
   computer = Player('Computer', 0);
   computer.isAttacked = true;
   placeComputerShips();
   hideComputerShips();
-});
+};
+initializeGame();
 
-// initializing the game
-let randNumArr = [];
-let player1 = Player('Player1', 0);
-let computer = Player('Computer', 0);
-computer.isAttacked = true;
-placeComputerShips();
-hideComputerShips();
-
-// export { createShip, createGameBoard, receiveAttack };
+// export {
+//   createGameBoard,
+//   Player,
+//   createShip,
+//   receiveAttack,
+//   addShipToBoard,
+// };
