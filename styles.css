@@ -1,0 +1,129 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+body  {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100%;
+  font-family: 'Roboto', sans-serif;
+  background-color: #eeeeee;
+  color: #333;
+  gap: 40px;
+  position: relative;
+}
+a{
+  text-decoration: none;
+  color: inherit;
+}
+.nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 5rem;
+  font-weight: bold;
+  padding: 15px 0;
+}
+.main {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+.player-board,
+.computer-board {
+  min-height: 400px;
+  min-width: 400px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, 40px);
+}
+.cell {
+  border: solid 1px #000000cb;
+  height: 40px;
+  width: 40px;
+}
+.footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: auto;
+  font-size: 1.5rem;
+}
+
+.game-over {
+  height: 180px;
+  width: 280px;
+  padding: 15px;
+  background-color: #e8e8e8;
+  box-shadow: rgba(16, 16, 16, 0.415) 0px 7px 29px 500px;
+  border-radius: 10px;
+  position: absolute;
+  top: calc(50% - 200px);
+  right: calc(50% - 150px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+}
+.game-over p {
+  justify-self: flex-start;
+  padding: 15px;
+  font-weight: bold;
+}
+.game-over button {
+  appearance: none;
+  background-color: #333;
+  border: 1px solid rgba(27, 31, 35, 0.15);
+  border-radius: 6px;
+  box-shadow: rgba(27, 31, 35, 0.04) 0 1px 0, rgba(255, 255, 255, 0.25) 0 1px 0 inset;
+  box-sizing: border-box;
+  color: #FAFBFC;
+  cursor: pointer;
+  display: inline-block;
+  font-family: -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  list-style: none;
+  padding: 8px 17px;
+  position: relative;
+  transition: background-color 0.2s cubic-bezier(0.3, 0, 0.5, 1);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  vertical-align: middle;
+  white-space: nowrap;
+  word-wrap: break-word;
+}
+.game-over button:hover {
+  background-color: #FAFBFC;
+  color: #333;
+  text-decoration: none;
+  transition-duration: 0.1s;
+}
+.game-over button:disabled {
+  background-color: #FAFBFC;
+  border-color: rgba(27, 31, 35, 0.15);
+  color: #959DA5;
+  cursor: default;
+}
+.game-over button:active {
+  background-color: #EDEFF2;
+  box-shadow: rgba(225, 228, 232, 0.2) 0 1px 0 inset;
+  transition: none 0s;
+}
+.game-over button:focus {
+  outline: 1px transparent;
+}
+.game-over button:before {
+  display: none;
+}
+.game-over button:-webkit-details-marker {
+  display: none;
+}
+.hidden {
+  display: none;
+}
