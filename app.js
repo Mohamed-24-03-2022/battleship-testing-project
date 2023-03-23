@@ -22,7 +22,6 @@ const createGameBoard = () => {
     setCell,
   };
 };
-/*______________________________________________________________________________*/
 const Player = (name, score = 0, isAttacked = false) => {
   const gameBoard = createGameBoard();
   const ships = [];
@@ -55,7 +54,6 @@ const Player = (name, score = 0, isAttacked = false) => {
 
   return player;
 };
-/*______________________________________________________________________________*/
 const createShip = (length, hitTimes = 0, isSunk = false) => {
   const ship = {
     length,
@@ -77,7 +75,6 @@ const createShip = (length, hitTimes = 0, isSunk = false) => {
 
   return ship;
 };
-/*______________________________________________________________________________*/
 const fillBoard = (player, x, y, shipLength) => {
   let feedBack = { isFilledCell: false, isOutOfBoard: false };
   let initialX = x;
@@ -110,7 +107,6 @@ const addShipToBoard = (player, x, y, newShipLength) => {
   newShip.y = [y];
   player.ships.push(newShip);
 };
-/*______________________________________________________________________________*/
 const receiveAttack = (player, x, y) => {
   let msg;
   let shipMsg = 'not attacked';
@@ -142,14 +138,17 @@ const receiveAttack = (player, x, y) => {
   return { msg, shipMsg };
 };
 /*______________________________________________________________________________*/
-//! DOM Manipulation
-//todo separate DOM from logic
 
+//! DOM Manipulation part
 const playerBoard = document.querySelector('.player-board');
 const computerBoard = document.querySelector('.computer-board');
 const gameOverBoard = document.querySelector('.game-over');
 const restartBtn = document.querySelector('.game-over button');
-
+const CELL_COLORS = {
+  TARGETED: 'rgb(51, 51, 51)',
+  HIT: 'red',
+  MISS: 'green',
+};
 
 // events handling
 const checkForWinner = () => {
@@ -165,11 +164,11 @@ const checkForWinner = () => {
     gameOverBoard.classList.remove('hidden');
   }
   if (isAllComputerShipsSunk) {
-    gameOverBoard.children[0].textContent = 'You have won'
+    gameOverBoard.children[0].textContent = 'You have won';
   } else {
-    gameOverBoard.children[0].textContent = 'You have lost'
+    gameOverBoard.children[0].textContent = 'You have lost';
   }
-}
+};
 const getCoordinates = (e, cells) => {
   const coordinates = (cells.indexOf(e.target) / 10).toFixed(1).split('');
   const x = Number(coordinates[0]);
@@ -178,14 +177,14 @@ const getCoordinates = (e, cells) => {
 };
 const handleClick = (e, cells, player, shipLength) => {
   const { x, y } = getCoordinates(e, cells);
-  addShipToBoard(player, x, y, shipLength); //todo separate DOM from logic
+  addShipToBoard(player, x, y, shipLength);
 };
-const placeShips = (e, cells, cellData, player, shipLength) => {
-  let { targetedCellIndex, filledCell, cellColor } = cellData;
+const placeShipsDOM = (e, cells, cellData, player, shipLength) => {
+  let { targetedCellIndex, cellColor } = cellData;
   let distanceShipCellIndex = (shipLength - 1) * 10;
 
   if (e.type === 'click') {
-    cellColor = filledCell;
+    cellColor = CELL_COLORS.TARGETED;
     handleClick(e, cells, player, shipLength);
   }
 
@@ -197,7 +196,7 @@ const placeShips = (e, cells, cellData, player, shipLength) => {
   if (
     !cells[targetedCellIndex + distanceShipCellIndex] ||
     cells[targetedCellIndex + distanceShipCellIndex].style.backgroundColor ===
-    filledCell
+    CELL_COLORS.TARGETED
   ) {
     return;
   }
@@ -205,12 +204,32 @@ const placeShips = (e, cells, cellData, player, shipLength) => {
   // styling ship cells vertically
   for (let i = 0; i < shipLength; i++) {
     // return if already filled
-    if (cells[targetedCellIndex].style.backgroundColor === filledCell) {
+    if (
+      cells[targetedCellIndex].style.backgroundColor === CELL_COLORS.TARGETED
+    ) {
       return;
     }
     cells[targetedCellIndex].style.backgroundColor = cellColor;
     targetedCellIndex += 10;
   }
+};
+const handleAttack = (e, player, cells) => {
+  const { x, y } = getCoordinates(e, cells);
+  const { msg, shipMsg } = receiveAttack(player, x, y);
+
+  if (msg === 'already attacked' && player === computer) {
+    return;
+  } else if (shipMsg === 'ship got a hit') {
+    e.target.style.backgroundColor = CELL_COLORS.HIT;
+  } else {
+    e.target.style.backgroundColor = CELL_COLORS.MISS;
+  }
+
+  const getPlayerTurn = player1.isAttacked ? computer : player1;
+  getPlayerTurn.isAttacked = true;
+  player.isAttacked = false;
+
+  return getPlayerTurn;
 };
 const handleEvent = (e, player) => {
   //! player param here represent the player who is being attacked
@@ -218,7 +237,6 @@ const handleEvent = (e, player) => {
   const cellData = {
     targetedCellIndex: cells.indexOf(e.target),
     cellColor: '#ccc',
-    filledCell: 'rgb(51, 51, 51)',
   };
 
   // if touching the parent div return
@@ -233,25 +251,10 @@ const handleEvent = (e, player) => {
       return;
     }
 
-    const { x, y } = getCoordinates(e, cells);
-    const { msg, shipMsg } = receiveAttack(player, x, y);
-    if (msg === 'already attacked' && player === computer) {
-      return;
-    } else if (shipMsg === 'ship got a hit') {
-      cells[cellData.targetedCellIndex].style.backgroundColor = 'red';
-    } else {
-      cells[cellData.targetedCellIndex].style.backgroundColor = 'green';
-    }
+    const nextPlayer = handleAttack(e, player, cells);
 
-    // switch player turns, 
-    // if it was player1 turn then attack computer after switching turn
-    if (player === computer) {
-      computer.isAttacked = false;
-      player1.isAttacked = true;
+    if (nextPlayer === player1) {
       lunchComputerAttack();
-    } else {
-      computer.isAttacked = true;
-      player1.isAttacked = false;
     }
 
     checkForWinner();
@@ -261,18 +264,24 @@ const handleEvent = (e, player) => {
     return;
   }
 
-  // placing one ship of each length 
-  let shipLength;
-  if (player.ships.length === 0) {
-    shipLength = 5;
-  } else if (player.ships.length === 1) {
-    shipLength = 4;
-  } else if (player.ships.length === 2) {
-    shipLength = 3;
-  } else if (player.ships.length === 3 || 4) {
-    shipLength = 2;
-  }
-  placeShips(e, cells, cellData, player, shipLength);
+  // placing one ship of each length
+  const shipLength = (() => {
+    switch (player.ships.length) {
+      case 0:
+        return 5;
+      case 1:
+        return 4;
+      case 2:
+        return 3;
+      case 3:
+      case 4:
+        return 2;
+      default:
+        throw new Error('Invalid number of ships!');
+    }
+  })();
+
+  placeShipsDOM(e, cells, cellData, player, shipLength);
 };
 
 // player1 event side
@@ -282,7 +291,6 @@ const handlePlayerEvent = (e) => {
 playerBoard.addEventListener('mouseover', handlePlayerEvent);
 playerBoard.addEventListener('mouseout', handlePlayerEvent);
 playerBoard.addEventListener('click', handlePlayerEvent);
-
 
 // computer event side
 const hideComputerShips = () => {
