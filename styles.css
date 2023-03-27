@@ -58,7 +58,7 @@ a{
   width: 280px;
   padding: 15px;
   background-color: #e8e8e8;
-  box-shadow: rgba(16, 16, 16, 0.415) 0px 7px 29px 500px;
+  box-shadow: rgba(16, 16, 16, 0.415) 0px 7px 29px 5000px;
   border-radius: 10px;
   position: absolute;
   top: calc(50% - 200px);
